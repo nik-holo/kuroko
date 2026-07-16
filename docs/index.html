@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>kuroko — image formats that just work</title>
-<meta name="description" content="A tiny macOS menu bar app that silently converts downloaded WebP, AVIF and HEIC images into JPEG, PNG or GIF.">
+<title>kuroko — automatic WebP, AVIF &amp; HEIC to JPEG/PNG converter for macOS</title>
+<meta name="description" content="Free macOS menu bar app that automatically converts WebP, AVIF and HEIC images to JPEG, PNG or GIF the moment they land in your Downloads — plus drag & drop conversion for any image.">
 <link rel="icon" href="icon.png">
 <style>
   :root {
@@ -33,7 +33,7 @@
   .icon {
     width: 160px;
     height: 160px;
-    filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.55));
+    filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.55));
   }
   h1 {
     font-size: 3rem;
@@ -114,14 +114,19 @@
     color: var(--muted);
   }
   footer a { color: inherit; }
+  .name-note {
+    margin-top: 0.6rem;
+    font-size: 0.8rem;
+    font-style: italic;
+    color: #55535c;
+  }
 </style>
 </head>
 <body>
 <main>
   <img class="icon" src="icon.png" alt="kuroko app icon — a hooded figure on a dark plate" width="160" height="160">
   <h1>kuroko</h1>
-  <p class="tagline">Saved a WebP again? Never see one again.</p>
-  <p class="sub"><em>kuroko (黒子) — the black-clad kabuki stagehand the audience agrees not to see.</em></p>
+  <p class="tagline">Automatically converts WebP, AVIF &amp; HEIC to JPEG, PNG or GIF.</p>
   <p class="sub">A tiny menu bar app for macOS that silently converts images landing in your
   Downloads into formats everything understands — WebP, AVIF and HEIC in;
   JPEG, PNG or GIF out. And when a file can't wait: drag it onto the menu bar
@@ -165,6 +170,7 @@
   <a href="https://github.com/nik-holo/kuroko">Source on GitHub</a> ·
   <a href="https://github.com/nik-holo/kuroko/releases">Releases</a> ·
   built with ImageIO, zero dependencies
+  <p class="name-note">kuroko (黒子) — the black-clad kabuki stagehand the audience agrees not to see.</p>
 </footer>
 </body>
 </html>
