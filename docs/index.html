@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kuroko — image formats that just work</title>
+<meta name="description" content="A tiny macOS menu bar app that silently converts downloaded WebP, AVIF and HEIC images into JPEG, PNG or GIF.">
+<link rel="icon" href="icon.png">
+<style>
+  :root {
+    --text: #f0eff2;
+    --muted: #9a97a3;
+    --bg: #1c1c20;
+    --card: #26262b;
+    --accent-from: #e8e8ee;
+    --accent-mid: #c9c9d2;
+    --accent-to: #9a9aa6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 4rem 1.5rem 2rem;
+    text-align: center;
+  }
+  main { max-width: 40rem; width: 100%; }
+  .icon {
+    width: 160px;
+    height: 160px;
+    filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.55));
+  }
+  h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-top: 1rem;
+    background: linear-gradient(100deg, var(--accent-from), var(--accent-mid), var(--accent-to));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .tagline {
+    font-size: 1.25rem;
+    margin-top: 0.5rem;
+  }
+  .sub {
+    color: var(--muted);
+    margin-top: 0.75rem;
+    font-size: 1rem;
+  }
+  .cta {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 0.9rem 2.2rem;
+    border-radius: 999px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1c1c20;
+    text-decoration: none;
+    background: linear-gradient(100deg, #ffffff, #d9d9e0);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6); }
+  .fine {
+    margin-top: 0.9rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .shots {
+    margin-top: 3.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  .shots figure { flex: 1 1 16rem; max-width: 26rem; }
+  .shots img { max-width: 100%; height: auto; }
+  .shots .framed {
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  }
+  .shots figcaption {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .menubar-strip { display: block; margin: 0 auto 0.75rem; width: 120px; }
+  .features {
+    margin-top: 3.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem;
+    text-align: left;
+  }
+  .feature {
+    background: var(--card);
+    border-radius: 1rem;
+    padding: 1.25rem 1.4rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+  .feature h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .feature p { font-size: 0.92rem; color: var(--muted); }
+  footer {
+    margin-top: 4rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <img class="icon" src="icon.png" alt="kuroko app icon — a hooded figure on a dark plate" width="160" height="160">
+  <h1>kuroko</h1>
+  <p class="tagline">Saved a WebP again? Never see one again.</p>
+  <p class="sub"><em>kuroko (黒子) — the black-clad kabuki stagehand the audience agrees not to see.</em></p>
+  <p class="sub">A tiny menu bar app for macOS that silently converts images landing in your
+  Downloads into formats everything understands — WebP, AVIF and HEIC in;
+  JPEG, PNG or GIF out. And when a file can't wait: drag it onto the menu bar
+  icon and convert it on the spot.</p>
+
+  <a class="cta" href="https://github.com/nik-holo/kuroko/releases/latest">Download for macOS</a>
+  <p class="fine">Free &amp; open source · macOS 14+ · unsigned build, right-click → Open on first launch</p>
+
+  <div class="features">
+    <div class="feature">
+      <h2>Automatic</h2>
+      <p>Watches Downloads and Desktop (or any folders you pick) and converts new images the moment they appear.</p>
+    </div>
+    <div class="feature">
+      <h2>Drag &amp; drop anything</h2>
+      <p>Drop images — or whole folders — onto the menu bar icon. A small panel lets you pick the output format, quality and destination before converting.</p>
+    </div>
+    <div class="feature">
+      <h2>Smart about formats</h2>
+      <p>JPEG for photos, PNG when there's transparency to preserve, GIF for animated WebPs — and dropped files can be any format your Mac can read, PNG and JPEG included.</p>
+    </div>
+    <div class="feature">
+      <h2>Safe &amp; quiet</h2>
+      <p>Originals go to the Trash, not into the void. No Dock icon, no notifications — just a Pause switch and a Convert Now sweep when you want them.</p>
+    </div>
+  </div>
+
+  <div class="shots">
+    <figure>
+      <img class="menubar-strip framed" src="shot-menubar.png" alt="The kuroko icon in the macOS menu bar" width="120">
+      <img src="shot-menu.png" alt="kuroko menu: Pause, Convert Now, Convert Files, Settings" width="330">
+      <figcaption>Lives quietly in your menu bar — pause, sweep, or convert files on demand.</figcaption>
+    </figure>
+    <figure>
+      <img src="shot-settings.png" alt="kuroko settings: watched folders, format toggles, originals and quality options" width="420">
+      <figcaption>Watched folders, format toggles, Trash safety and quality — all the settings there are.</figcaption>
+    </figure>
+  </div>
+</main>
+<footer>
+  <a href="https://github.com/nik-holo/kuroko">Source on GitHub</a> · built with ImageIO, zero dependencies
+</footer>
+</body>
+</html>

@@ -2,9 +2,9 @@
 import PackageDescription
 
 let package = Package(
-    name: "boomerpix",
+    name: "kuroko",
     platforms: [.macOS(.v14)],
     targets: [
-        .executableTarget(name: "boomerpix", path: "Sources/boomerpix")
+        .executableTarget(name: "kuroko", path: "Sources/kuroko")
     ]
 )

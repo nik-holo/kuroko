@@ -11,7 +11,7 @@ enum SettingsWindow {
                 rootView: SettingsView().environmentObject(SettingsStore.shared)
             )
             let newWindow = NSWindow(contentViewController: hosting)
-            newWindow.title = "boomerpix Settings"
+            newWindow.title = "kuroko Settings"
             newWindow.styleMask = [.titled, .closable, .miniaturizable]
             newWindow.isReleasedWhenClosed = false
             newWindow.center()

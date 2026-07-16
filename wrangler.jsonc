@@ -1,0 +1,10 @@
+{
+  // Cloudflare Worker config: assets-only worker serving the landing page.
+  // Deploy manually with `npx wrangler deploy`, or let Cloudflare's git
+  // integration run it on every push.
+  "name": "kuroko",
+  "compatibility_date": "2026-07-17",
+  "assets": {
+    "directory": "./docs"
+  }
+}

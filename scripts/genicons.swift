@@ -1,7 +1,9 @@
 #!/usr/bin/env swift
-// Generates Resources/boomerpix.icns (app icon).
+// Generates Resources/kuroko.icns (app icon).
 // Run: swift scripts/genicons.swift   (from the repo root)
-// Design: retro 70s sunrise — concentric sun arcs over a dark horizon.
+//
+// If Resources/icon-master.png exists (1024x1024 with real alpha), all sizes
+// are scaled from it. Otherwise falls back to the code-drawn retro sunrise.
 
 import AppKit
 
@@ -64,10 +66,29 @@ func renderAppIcon(pixels: Int) -> NSBitmapImageRep {
     return rep
 }
 
+func renderFromMaster(_ master: NSImage, pixels: Int) -> NSBitmapImageRep {
+    let rep = NSBitmapImageRep(
+        bitmapDataPlanes: nil, pixelsWide: pixels, pixelsHigh: pixels,
+        bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+        colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0
+    )!
+    rep.size = NSSize(width: pixels, height: pixels)
+    NSGraphicsContext.saveGraphicsState()
+    NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
+    NSGraphicsContext.current?.imageInterpolation = .high
+    master.draw(
+        in: NSRect(x: 0, y: 0, width: pixels, height: pixels),
+        from: .zero, operation: .copy, fraction: 1
+    )
+    NSGraphicsContext.restoreGraphicsState()
+    return rep
+}
+
 // --- main ---
 
 let repoRoot = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
 let resources = repoRoot.appendingPathComponent("Resources")
+let master = NSImage(contentsOf: resources.appendingPathComponent("icon-master.png"))
 let iconset = resources.appendingPathComponent("AppIcon.iconset")
 try? FileManager.default.removeItem(at: iconset)
 try FileManager.default.createDirectory(at: iconset, withIntermediateDirectories: true)
@@ -80,17 +101,19 @@ let entries: [(name: String, pixels: Int)] = [
     ("icon_512x512", 512), ("icon_512x512@2x", 1024),
 ]
 for entry in entries {
-    let rep = renderAppIcon(pixels: entry.pixels)
+    let rep = master.map { renderFromMaster($0, pixels: entry.pixels) }
+        ?? renderAppIcon(pixels: entry.pixels)
     let png = rep.representation(using: .png, properties: [:])!
     try png.write(to: iconset.appendingPathComponent("\(entry.name).png"))
 }
+print(master != nil ? "using Resources/icon-master.png" : "using code-drawn sunrise")
 
 let iconutil = Process()
 iconutil.executableURL = URL(fileURLWithPath: "/usr/bin/iconutil")
-iconutil.arguments = ["-c", "icns", iconset.path, "-o", resources.appendingPathComponent("boomerpix.icns").path]
+iconutil.arguments = ["-c", "icns", iconset.path, "-o", resources.appendingPathComponent("kuroko.icns").path]
 try iconutil.run()
 iconutil.waitUntilExit()
 guard iconutil.terminationStatus == 0 else {
     fatalError("iconutil failed")
 }
-print("wrote Resources/boomerpix.icns")
+print("wrote Resources/kuroko.icns")

@@ -10,7 +10,7 @@ struct SettingsView: View {
         Form {
             Section("Watched Folders") {
                 if settings.folders.isEmpty {
-                    Text("No folders — boomerpix is idle.")
+                    Text("No folders — kuroko is idle.")
                         .foregroundStyle(.secondary)
                 }
                 ForEach(settings.folders, id: \.self) { path in
@@ -53,7 +53,7 @@ struct SettingsView: View {
                     .onChange(of: launchAtLogin) { _, enabled in
                         setLaunchAtLogin(enabled)
                     }
-                Text("Launch at login only works when boomerpix runs as an installed .app (see README).")
+                Text("Launch at login only works when kuroko runs as an installed .app (see README).")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

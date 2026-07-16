@@ -3,7 +3,7 @@ import os
 
 @MainActor
 final class ConversionEngine: ObservableObject {
-    private let logger = Logger(subsystem: "dev.nik.boomerpix", category: "engine")
+    private let logger = Logger(subsystem: "dev.nik.kuroko", category: "engine")
     private var inFlight: Set<String> = []
     /// Keys of originals already converted in keep-originals mode, so folder
     /// events don't reconvert them. Key includes size+mtime so a re-downloaded
@@ -45,6 +45,26 @@ final class ConversionEngine: ObservableObject {
                 self.logger.info("converted \(url.lastPathComponent) -> \(outcome.output.lastPathComponent)")
             case .failure(let error):
                 self.logger.error("failed to convert \(url.lastPathComponent): \(String(describing: error))")
+            }
+        }
+    }
+
+    /// Converts user-dropped files with explicit options. No stability wait —
+    /// dropped files are complete — and no processed-set bookkeeping, since the
+    /// user explicitly asked for these conversions.
+    func convertBatch(_ files: [URL], options: ConversionOptions, trashOriginals: Bool) {
+        let logger = self.logger
+        Task.detached(priority: .userInitiated) {
+            for file in files {
+                do {
+                    let outcome = try ImageConverter.convert(file, options: options)
+                    if trashOriginals {
+                        try? FileManager.default.trashItem(at: file, resultingItemURL: nil)
+                    }
+                    logger.info("drop-convert \(file.lastPathComponent) -> \(outcome.output.lastPathComponent)")
+                } catch {
+                    logger.error("drop-convert failed \(file.lastPathComponent): \(String(describing: error))")
+                }
             }
         }
     }

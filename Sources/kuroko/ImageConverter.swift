@@ -21,45 +21,85 @@ struct ConversionOutcome {
     let kind: String // "jpeg", "png", "gif"
 }
 
+enum OutputFormat: String, CaseIterable, Identifiable {
+    case auto, jpeg, png, gif
+
+    var id: String { rawValue }
+    var label: String {
+        switch self {
+        case .auto: return "Auto"
+        case .jpeg: return "JPEG"
+        case .png: return "PNG"
+        case .gif: return "GIF"
+        }
+    }
+}
+
+struct ConversionOptions {
+    var format: OutputFormat = .auto
+    var jpegQuality: Double
+    var animatedToGIF: Bool = true
+    /// nil = write next to the original
+    var destinationDir: URL? = nil
+}
+
 enum ImageConverter {
 
-    /// Converts a WebP/AVIF/HEIC file next to the original.
-    /// Static images become JPEG, or PNG when they carry an alpha channel.
-    /// Animated images become GIF when `animatedToGIF` is on (otherwise first frame is used).
+    /// Watcher/CLI entry point: auto format rules, output next to the original.
     static func convert(_ url: URL, jpegQuality: Double, animatedToGIF: Bool) throws -> ConversionOutcome {
+        try convert(url, options: ConversionOptions(jpegQuality: jpegQuality, animatedToGIF: animatedToGIF))
+    }
+
+    /// Converts any ImageIO-decodable image.
+    /// Auto rules: animated → GIF (when enabled), alpha → PNG, otherwise JPEG.
+    /// An explicit format forces the output; animated sources collapse to the
+    /// first frame unless the target is GIF.
+    static func convert(_ url: URL, options: ConversionOptions) throws -> ConversionOutcome {
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
             throw ConvertError.unreadable
         }
         let frameCount = CGImageSourceGetCount(source)
         guard frameCount > 0 else { throw ConvertError.undecodable }
 
-        if frameCount > 1 && animatedToGIF {
-            return try encodeGIF(source, frameCount: frameCount, original: url)
-        }
-
         let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any]
         let hasAlpha = (properties?[kCGImagePropertyHasAlpha] as? Bool) ?? false
+        let animated = frameCount > 1
 
-        let type: UTType = hasAlpha ? .png : .jpeg
-        let output = uniqueOutputURL(for: url, ext: hasAlpha ? "png" : "jpg")
+        let resolved: OutputFormat
+        switch options.format {
+        case .auto:
+            resolved = (animated && options.animatedToGIF) ? .gif : (hasAlpha ? .png : .jpeg)
+        default:
+            resolved = options.format
+        }
+
+        if resolved == .gif {
+            return try encodeGIF(source, frameCount: frameCount, original: url,
+                                 destinationDir: options.destinationDir)
+        }
+
+        let type: UTType = resolved == .png ? .png : .jpeg
+        let ext = resolved == .png ? "png" : "jpg"
+        let output = uniqueOutputURL(for: url, ext: ext, in: options.destinationDir)
         guard let destination = CGImageDestinationCreateWithURL(
             output as CFURL, type.identifier as CFString, 1, nil
         ) else { throw ConvertError.encodeFailed }
 
-        var options: [CFString: Any] = [:]
+        var addOptions: [CFString: Any] = [:]
         if type == .jpeg {
-            options[kCGImageDestinationLossyCompressionQuality] = jpegQuality
+            addOptions[kCGImageDestinationLossyCompressionQuality] = options.jpegQuality
         }
-        CGImageDestinationAddImageFromSource(destination, source, 0, options as CFDictionary)
+        CGImageDestinationAddImageFromSource(destination, source, 0, addOptions as CFDictionary)
         guard CGImageDestinationFinalize(destination) else {
             try? FileManager.default.removeItem(at: output)
             throw ConvertError.encodeFailed
         }
-        return ConversionOutcome(output: output, kind: hasAlpha ? "png" : "jpeg")
+        return ConversionOutcome(output: output, kind: ext == "png" ? "png" : "jpeg")
     }
 
-    private static func encodeGIF(_ source: CGImageSource, frameCount: Int, original: URL) throws -> ConversionOutcome {
-        let output = uniqueOutputURL(for: original, ext: "gif")
+    private static func encodeGIF(_ source: CGImageSource, frameCount: Int, original: URL,
+                                  destinationDir: URL? = nil) throws -> ConversionOutcome {
+        let output = uniqueOutputURL(for: original, ext: "gif", in: destinationDir)
         guard let destination = CGImageDestinationCreateWithURL(
             output as CFURL, UTType.gif.identifier as CFString, frameCount, nil
         ) else { throw ConvertError.encodeFailed }
@@ -103,8 +143,8 @@ enum ImageConverter {
     }
 
     /// photo.webp -> photo.jpg; if taken, photo 2.jpg, photo 3.jpg, ...
-    private static func uniqueOutputURL(for original: URL, ext: String) -> URL {
-        let directory = original.deletingLastPathComponent()
+    private static func uniqueOutputURL(for original: URL, ext: String, in destinationDir: URL? = nil) -> URL {
+        let directory = destinationDir ?? original.deletingLastPathComponent()
         let base = original.deletingPathExtension().lastPathComponent
         var candidate = directory.appendingPathComponent(base).appendingPathExtension(ext)
         var counter = 2
