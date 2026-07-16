@@ -32,10 +32,7 @@ cp Resources/dmg-background.png "$STAGE/.background/background.png"
 hdiutil create -volname "$VOL" -srcfolder "$STAGE" -fs HFS+ -format UDRW -ov "$RW_DMG" >/dev/null
 MOUNT_POINT="$(hdiutil attach "$RW_DMG" -readwrite -noverify -noautoopen | grep -oE '/Volumes/.+$' | head -1)"
 VOLNAME="$(basename "$MOUNT_POINT")"
-
-# volume icon
-cp Resources/kuroko.icns "$MOUNT_POINT/.VolumeIcon.icns"
-SetFile -a C "$MOUNT_POINT" 2>/dev/null || true
+sleep 2  # let Finder register the new disk before scripting it
 
 # Finder window layout (may prompt once for Finder automation permission)
 osascript <<EOF
@@ -60,12 +57,25 @@ tell application "Finder"
 end tell
 EOF
 
+# Volume icon must go in AFTER the Finder scripting above — Finder's layout
+# pass deletes .VolumeIcon.icns and clears the custom-icon flag.
+cp Resources/kuroko.icns "$MOUNT_POINT/.VolumeIcon.icns"
+SetFile -a C "$MOUNT_POINT"
+
 sync
 hdiutil detach "$MOUNT_POINT" >/dev/null
 MOUNT_POINT=""
 rm -f "$DMG"
 hdiutil convert "$RW_DMG" -format UDZO -o "$DMG" >/dev/null
 
-echo "Built $DMG"
+# custom icon on the .dmg file itself (lives in the resource fork: survives
+# local use, AirDrop and zips, but a plain HTTP download strips it)
+swift scripts/seticon.swift Resources/kuroko.icns "$DMG"
+
+# stable-name copy for the permanent download link:
+# github.com/nik-holo/kuroko/releases/latest/download/kuroko.dmg
+cp "$DMG" dist/kuroko.dmg
+
+echo "Built $DMG (+ dist/kuroko.dmg for the stable release-asset link)"
 echo "Note: unsigned build — recipients must right-click the app > Open on first launch,"
 echo "or run: xattr -d com.apple.quarantine /Applications/kuroko.app"

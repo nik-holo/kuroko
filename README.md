@@ -77,8 +77,9 @@ git commit -am "Release v0.2.0"
 git tag v0.2.0
 git push && git push --tags
 
-# 4. publish the GitHub release with the DMG attached
-gh release create v0.2.0 dist/kuroko-0.2.0.dmg \
+# 4. publish the GitHub release with the DMG attached (kuroko.dmg is the
+#    stable-name copy the landing page's download button points at)
+gh release create v0.2.0 dist/kuroko-0.2.0.dmg dist/kuroko.dmg \
   --title "kuroko 0.2.0" --generate-notes
 ```
 
