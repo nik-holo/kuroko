@@ -77,5 +77,6 @@ swift scripts/seticon.swift Resources/kuroko.icns "$DMG"
 cp "$DMG" dist/kuroko.dmg
 
 echo "Built $DMG (+ dist/kuroko.dmg for the stable release-asset link)"
-echo "Note: unsigned build — recipients must right-click the app > Open on first launch,"
+echo "Note: unsigned build — after macOS blocks the first launch, recipients allow it"
+echo "via System Settings > Privacy & Security > 'Open Anyway',"
 echo "or run: xattr -d com.apple.quarantine /Applications/kuroko.app"

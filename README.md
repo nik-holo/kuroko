@@ -55,8 +55,9 @@ The DMG opens as a styled window — brand background with a gradient arrow from
 app to the Applications shortcut (`swift scripts/gendmgbg.swift` regenerates the
 backdrop in `Resources/dmg-background.png`). Building the DMG scripts Finder to lay
 out the window, which may prompt once for automation permission.
-Since the build is unsigned, people who download it must right-click → **Open** on
-first launch (once), or run
+Since the build is unsigned, macOS blocks the first launch of a downloaded copy.
+Recipients allow it under **System Settings → Privacy & Security → "Open Anyway"**
+(the old right-click → Open trick no longer works on current macOS), or run
 `xattr -d com.apple.quarantine /Applications/kuroko.app`.
 
 ## Releasing a new version

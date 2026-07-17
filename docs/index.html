@@ -73,6 +73,20 @@
     font-size: 0.85rem;
     color: var(--muted);
   }
+  .demo {
+    margin-top: 3.5rem;
+  }
+  .demo video {
+    width: 100%;
+    max-width: 40rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  }
+  .demo figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
   .shots {
     margin-top: 3.5rem;
     display: flex;
@@ -133,7 +147,8 @@
   icon and convert it on the spot.</p>
 
   <a class="cta" href="https://github.com/nik-holo/kuroko/releases/latest/download/kuroko.dmg">Download for macOS</a>
-  <p class="fine">Free &amp; open source · macOS 14+ · unsigned build, right-click → Open on first launch</p>
+  <p class="fine">Free &amp; open source · macOS 14+ · unsigned build: after first launch is blocked,
+  allow it under System Settings → Privacy &amp; Security → “Open Anyway”</p>
 
   <div class="features">
     <div class="feature">
@@ -153,6 +168,12 @@
       <p>Originals go to the Trash, not into the void. No Dock icon, no notifications — just a Pause switch and a Convert Now sweep when you want them.</p>
     </div>
   </div>
+
+  <figure class="demo">
+    <video src="demo.mp4" autoplay muted loop playsinline controls
+           aria-label="Demo: dropping an image onto the kuroko menu bar icon and converting it"></video>
+    <figcaption>Drop an image on the menu bar icon, pick the output, done.</figcaption>
+  </figure>
 
   <div class="shots">
     <figure>
