@@ -3,9 +3,73 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>kuroko — automatic WebP, AVIF &amp; HEIC to JPEG/PNG converter for macOS</title>
-<meta name="description" content="Free macOS menu bar app that automatically converts WebP, AVIF and HEIC images to JPEG, PNG or GIF the moment they land in your Downloads — plus drag & drop conversion for any image.">
+<title>Convert WebP, AVIF &amp; HEIC to JPEG or PNG on Mac — kuroko</title>
+<meta name="description" content="Free Mac menu bar app that automatically converts WebP, AVIF and HEIC images to JPEG, PNG or GIF as they land in your Downloads. Drag &amp; drop converts anything.">
+<link rel="canonical" href="https://kuroko.holo.red/">
 <link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="kuroko">
+<meta property="og:title" content="kuroko — convert WebP, AVIF &amp; HEIC to JPEG or PNG on Mac, automatically">
+<meta property="og:description" content="Free menu bar app that converts images to formats everything understands the moment they hit your Downloads folder.">
+<meta property="og:url" content="https://kuroko.holo.red/">
+<meta property="og:image" content="https://kuroko.holo.red/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="kuroko — convert WebP, AVIF &amp; HEIC to JPEG or PNG on Mac, automatically">
+<meta name="twitter:description" content="Free menu bar app that converts images to formats everything understands the moment they hit your Downloads folder.">
+<meta name="twitter:image" content="https://kuroko.holo.red/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "kuroko",
+  "operatingSystem": "macOS 14.0 or later",
+  "applicationCategory": "UtilitiesApplication",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "description": "Menu bar app that automatically converts WebP, AVIF and HEIC images to JPEG, PNG or GIF, with drag & drop conversion for any image format.",
+  "url": "https://kuroko.holo.red/",
+  "downloadUrl": "https://github.com/nik-holo/kuroko/releases/latest/download/kuroko.dmg",
+  "image": "https://kuroko.holo.red/icon.png",
+  "softwareVersion": "0.2.0"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I convert WebP to JPEG on a Mac?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Install kuroko and you don't have to do anything: any WebP saved to your Downloads or Desktop is converted to JPEG automatically within seconds. For files elsewhere, drag them onto the kuroko icon in the menu bar." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it convert HEIC photos from an iPhone?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — HEIC and HEIF images are converted to JPEG (or PNG when they contain transparency), so they open anywhere, including Windows machines and older software." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens to animated WebP images?",
+      "acceptedAnswer": { "@type": "Answer", "text": "They become GIFs, with frame timing preserved — so animations stay animations instead of collapsing into a single still frame." }
+    },
+    {
+      "@type": "Question",
+      "name": "Are my images uploaded anywhere?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. kuroko converts everything locally using Apple's built-in ImageIO framework and makes no network connections at all. It's open source, so you can verify that." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is kuroko free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Completely free and open source, no account, no ads. It needs macOS 14 (Sonoma) or newer." }
+    }
+  ]
+}
+</script>
 <style>
   :root {
     --text: #f0eff2;
@@ -47,6 +111,7 @@
   }
   .tagline {
     font-size: 1.25rem;
+    font-weight: 500;
     margin-top: 0.5rem;
   }
   .sub {
@@ -120,8 +185,15 @@
     padding: 1.25rem 1.4rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   }
-  .feature h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .feature h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
   .feature p { font-size: 0.92rem; color: var(--muted); }
+  .faq {
+    margin-top: 3.5rem;
+    text-align: left;
+  }
+  .faq h2 { font-size: 1.15rem; margin-bottom: 1rem; text-align: center; }
+  .faq h3 { font-size: 0.98rem; font-weight: 700; margin-top: 1.1rem; }
+  .faq p { font-size: 0.92rem; color: var(--muted); margin-top: 0.25rem; }
   footer {
     margin-top: 4rem;
     font-size: 0.85rem;
@@ -140,7 +212,7 @@
 <main>
   <img class="icon" src="icon.png" alt="kuroko app icon — a hooded figure on a dark plate" width="160" height="160">
   <h1>kuroko</h1>
-  <p class="tagline">Automatically converts WebP, AVIF &amp; HEIC to JPEG, PNG or GIF.</p>
+  <h2 class="tagline">Automatically converts WebP, AVIF &amp; HEIC to JPEG, PNG or GIF.</h2>
   <p class="sub">A tiny menu bar app for macOS that silently converts images landing in your
   Downloads into formats everything understands — WebP, AVIF and HEIC in;
   JPEG, PNG or GIF out. And when a file can't wait: drag it onto the menu bar
@@ -152,19 +224,19 @@
 
   <div class="features">
     <div class="feature">
-      <h2>Automatic</h2>
+      <h3>Automatic conversion</h3>
       <p>Watches Downloads and Desktop (or any folders you pick) and converts new images the moment they appear.</p>
     </div>
     <div class="feature">
-      <h2>Drag &amp; drop anything</h2>
+      <h3>Drag &amp; drop anything</h3>
       <p>Drop images — or whole folders — onto the menu bar icon. A small panel lets you pick the output format, quality and destination before converting.</p>
     </div>
     <div class="feature">
-      <h2>Smart about formats</h2>
+      <h3>Smart about formats</h3>
       <p>JPEG for photos, PNG when there's transparency to preserve, GIF for animated WebPs — and dropped files can be any format your Mac can read, PNG and JPEG included.</p>
     </div>
     <div class="feature">
-      <h2>Safe &amp; quiet</h2>
+      <h3>Safe &amp; quiet</h3>
       <p>Originals go to the Trash, not into the void. No Dock icon, no notifications — just a Pause switch and a Convert Now sweep when you want them.</p>
     </div>
   </div>
@@ -186,6 +258,26 @@
       <figcaption>Watched folders, format toggles, Trash safety and quality — all the settings there are.</figcaption>
     </figure>
   </div>
+
+  <section class="faq">
+    <h2>Frequently asked questions</h2>
+    <h3>How do I convert WebP to JPEG on a Mac?</h3>
+    <p>Install kuroko and you don't have to do anything: any WebP saved to your Downloads
+    or Desktop is converted to JPEG automatically within seconds. For files elsewhere,
+    drag them onto the kuroko icon in the menu bar.</p>
+    <h3>Does it convert HEIC photos from an iPhone?</h3>
+    <p>Yes — HEIC and HEIF images are converted to JPEG (or PNG when they contain
+    transparency), so they open anywhere, including Windows machines and older software.</p>
+    <h3>What happens to animated WebP images?</h3>
+    <p>They become GIFs, with frame timing preserved — so animations stay animations
+    instead of collapsing into a single still frame.</p>
+    <h3>Are my images uploaded anywhere?</h3>
+    <p>No. kuroko converts everything locally using Apple's built-in ImageIO framework and
+    makes no network connections at all. It's open source, so you can verify that.</p>
+    <h3>Is kuroko free?</h3>
+    <p>Completely free and open source, no account, no ads. It needs macOS 14 (Sonoma)
+    or newer.</p>
+  </section>
 </main>
 <footer>
   <a href="https://github.com/nik-holo/kuroko">Source on GitHub</a> ·
