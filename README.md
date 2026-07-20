@@ -22,6 +22,12 @@ Requires macOS 14 (Sonoma) or newer.
 open /Applications/kuroko.app
 ```
 
+Or via Homebrew (installs the latest GitHub release):
+
+```sh
+brew install --cask nik-holo/tap/kuroko
+```
+
 On first conversion, macOS will ask for permission to access your Downloads/Desktop
 folder — allow it once and you're set.
 
@@ -35,12 +41,22 @@ notarize it with an Apple Developer account).
   - **Pause / Resume** — temporarily stop auto-converting
   - **Convert Now** — sweep all watched folders for convertible files
   - **Convert Files…** — pick images or folders to convert manually
-  - **Settings…** — watched folders, formats, originals handling, JPEG quality,
-    launch at login
+  - **Undo Last Conversion** — outputs go to the Trash, trashed originals come back
+  - **Settings…** — watched folders, formats, originals handling, quality,
+    metadata stripping, notifications, launch at login
+  - plus a running count of everything converted so far
 - **Drag & drop:** drop images (any format macOS can read — also PNG, JPEG, TIFF…)
-  or folders onto the menu bar icon. A confirm panel lets you pick the output
-  format (Auto/JPEG/PNG/GIF), JPEG quality, whether originals go to the Trash,
-  and a destination folder. Folders contribute their top-level images.
+  or folders onto the menu bar icon. The confirm panel offers: output format
+  (Auto/JPEG/PNG/GIF plus AVIF/HEIC for converting the other direction), quality,
+  max size limits — pixels and/or megabytes (the MB cap lowers quality first,
+  then dimensions, until the file fits) — metadata removal, Trash behavior, and
+  a destination folder. Folders contribute their top-level images.
+  (WebP output isn't possible — macOS can decode WebP but not encode it.)
+- **Finder right-click:** select images in Finder → right-click → Services →
+  **Convert with kuroko** opens the same panel. (If it doesn't appear right away,
+  log out/in once — macOS caches the Services menu.)
+- **Metadata stripping** (Settings or per-drop): re-encodes pixels only, dropping
+  EXIF including GPS location; orientation is baked into the pixels first.
 - Watching applies to **newly appearing files only**; files already in a folder are
   only touched by Convert Now.
 - Filename collisions get a suffix: `photo.webp` → `photo 2.jpg` if `photo.jpg` exists.

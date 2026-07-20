@@ -12,6 +12,9 @@ final class SettingsStore: ObservableObject {
         static let convertAVIF = "convertAVIF"
         static let convertHEIC = "convertHEIC"
         static let animatedToGIF = "animatedToGIF"
+        static let stripMetadata = "stripMetadata"
+        static let notifyOnConversion = "notifyOnConversion"
+        static let totalConverted = "totalConverted"
     }
 
     @Published var folders: [String] { didSet { defaults.set(folders, forKey: Keys.folders) } }
@@ -21,6 +24,9 @@ final class SettingsStore: ObservableObject {
     @Published var convertAVIF: Bool { didSet { defaults.set(convertAVIF, forKey: Keys.convertAVIF) } }
     @Published var convertHEIC: Bool { didSet { defaults.set(convertHEIC, forKey: Keys.convertHEIC) } }
     @Published var animatedToGIF: Bool { didSet { defaults.set(animatedToGIF, forKey: Keys.animatedToGIF) } }
+    @Published var stripMetadata: Bool { didSet { defaults.set(stripMetadata, forKey: Keys.stripMetadata) } }
+    @Published var notifyOnConversion: Bool { didSet { defaults.set(notifyOnConversion, forKey: Keys.notifyOnConversion) } }
+    @Published var totalConverted: Int { didSet { defaults.set(totalConverted, forKey: Keys.totalConverted) } }
 
     private let defaults = UserDefaults.standard
 
@@ -38,6 +44,9 @@ final class SettingsStore: ObservableObject {
             Keys.convertAVIF: true,
             Keys.convertHEIC: true,
             Keys.animatedToGIF: true,
+            Keys.stripMetadata: false,
+            Keys.notifyOnConversion: false,
+            Keys.totalConverted: 0,
         ])
         folders = defaults.stringArray(forKey: Keys.folders) ?? defaultFolders
         trashOriginals = defaults.bool(forKey: Keys.trashOriginals)
@@ -46,6 +55,9 @@ final class SettingsStore: ObservableObject {
         convertAVIF = defaults.bool(forKey: Keys.convertAVIF)
         convertHEIC = defaults.bool(forKey: Keys.convertHEIC)
         animatedToGIF = defaults.bool(forKey: Keys.animatedToGIF)
+        stripMetadata = defaults.bool(forKey: Keys.stripMetadata)
+        notifyOnConversion = defaults.bool(forKey: Keys.notifyOnConversion)
+        totalConverted = defaults.integer(forKey: Keys.totalConverted)
     }
 
     var enabledExtensions: Set<String> {

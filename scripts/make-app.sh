@@ -33,6 +33,16 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
     <key>NSHighResolutionCapable</key><true/>
+    <key>NSServices</key>
+    <array>
+        <dict>
+            <key>NSMenuItem</key>
+            <dict><key>default</key><string>Convert with kuroko</string></dict>
+            <key>NSMessage</key><string>convertFiles</string>
+            <key>NSSendFileTypes</key>
+            <array><string>public.image</string></array>
+        </dict>
+    </array>
 </dict>
 </plist>
 PLIST

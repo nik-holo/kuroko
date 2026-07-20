@@ -41,9 +41,22 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         statusLine.isEnabled = false
         menu.addItem(statusLine)
 
+        let total = SettingsStore.shared.totalConverted
+        if total > 0 {
+            let counter = NSMenuItem(
+                title: "\(total.formatted()) image\(total == 1 ? "" : "s") converted",
+                action: nil, keyEquivalent: ""
+            )
+            counter.isEnabled = false
+            menu.addItem(counter)
+        }
+
         menu.addItem(item(appState.paused ? "Resume" : "Pause", #selector(togglePause)))
         menu.addItem(item("Convert Now", #selector(convertNow)))
         menu.addItem(item("Convert Files…", #selector(chooseFiles)))
+        if appState.engine.lastUndo != nil {
+            menu.addItem(item("Undo Last Conversion", #selector(undoLast)))
+        }
         menu.addItem(.separator())
         menu.addItem(item("Settings…", #selector(openSettings)))
         menu.addItem(.separator())
@@ -58,6 +71,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     @objc private func togglePause() { appState.paused.toggle() }
     @objc private func convertNow() { appState.convertNow() }
+    @objc private func undoLast() { appState.engine.undoLast() }
     @objc private func openSettings() { SettingsWindow.show() }
     @objc private func quit() { NSApp.terminate(nil) }
 
@@ -76,10 +90,32 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     // MARK: drops
 
-    private func handleDrop(_ urls: [URL]) {
+    func handleDrop(_ urls: [URL]) {
         let files = DropExpander.expand(urls)
         guard !files.isEmpty else { return }
         DropPanel.show(files: files, engine: appState.engine)
+    }
+}
+
+/// Handles the Finder right-click Services entry ("Convert with kuroko").
+/// Declared via NSServices in Info.plist; registered as NSApp.servicesProvider.
+final class ServiceProvider: NSObject {
+    private let onFiles: @MainActor ([URL]) -> Void
+
+    init(onFiles: @escaping @MainActor ([URL]) -> Void) {
+        self.onFiles = onFiles
+    }
+
+    @objc func convertFiles(_ pasteboard: NSPasteboard, userData: String,
+                            error: AutoreleasingUnsafeMutablePointer<NSString>) {
+        let urls = (pasteboard.readObjects(
+            forClasses: [NSURL.self],
+            options: [.urlReadingFileURLsOnly: true]
+        ) as? [URL]) ?? []
+        guard !urls.isEmpty else { return }
+        Task { @MainActor in
+            self.onFiles(urls)
+        }
     }
 }
 

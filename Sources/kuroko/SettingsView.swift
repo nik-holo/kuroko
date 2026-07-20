@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import ServiceManagement
+import UserNotifications
 
 struct SettingsView: View {
     @EnvironmentObject private var settings: SettingsStore
@@ -38,6 +39,11 @@ struct SettingsView: View {
 
             Section("Output") {
                 Toggle("Move originals to Trash", isOn: $settings.trashOriginals)
+                Toggle("Remove metadata (EXIF, GPS location)", isOn: $settings.stripMetadata)
+                Toggle("Show notification after conversion", isOn: $settings.notifyOnConversion)
+                    .onChange(of: settings.notifyOnConversion) { _, enabled in
+                        if enabled { requestNotificationPermission() }
+                    }
                 VStack(alignment: .leading) {
                     Slider(value: $settings.jpegQuality, in: 0.5...1.0, step: 0.05) {
                         Text("JPEG quality")
@@ -78,6 +84,11 @@ struct SettingsView: View {
                 settings.addFolder(url.path)
             }
         }
+    }
+
+    private func requestNotificationPermission() {
+        guard Bundle.main.bundleIdentifier != nil else { return }  // needs installed .app
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 
     private func setLaunchAtLogin(_ enabled: Bool) {

@@ -34,7 +34,7 @@
   "url": "https://kuroko.holo.red/",
   "downloadUrl": "https://github.com/nik-holo/kuroko/releases/latest/download/kuroko.dmg",
   "image": "https://kuroko.holo.red/icon.png",
-  "softwareVersion": "0.2.0"
+  "softwareVersion": "0.3.0"
 }
 </script>
 <script type="application/ld+json">
@@ -56,6 +56,16 @@
       "@type": "Question",
       "name": "What happens to animated WebP images?",
       "acceptedAnswer": { "@type": "Answer", "text": "They become GIFs, with frame timing preserved — so animations stay animations instead of collapsing into a single still frame." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can it convert JPEG or PNG to AVIF and HEIC?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — drag & drop conversion works in both directions: pick AVIF or HEIC as the output format to shrink images into modern formats. (WebP output isn't possible — macOS can decode WebP but not encode it.)" }
+    },
+    {
+      "@type": "Question",
+      "name": "Can it keep images under a size limit?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. When converting by drag & drop you can cap the output by pixels (longest side) and/or megabytes — kuroko reduces quality first, then dimensions, until the file fits your limit." }
     },
     {
       "@type": "Question",
@@ -138,6 +148,14 @@
     font-size: 0.85rem;
     color: var(--muted);
   }
+  .fine + .fine { margin-top: 0.3rem; }
+  code {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.9em;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.1em 0.4em;
+    border-radius: 5px;
+  }
   .demo {
     margin-top: 3.5rem;
   }
@@ -219,25 +237,34 @@
   icon and convert it on the spot.</p>
 
   <a class="cta" href="https://github.com/nik-holo/kuroko/releases/latest/download/kuroko.dmg">Download for macOS</a>
-  <p class="fine">Free &amp; open source · macOS 14+ · unsigned build: after first launch is blocked,
-  allow it under System Settings → Privacy &amp; Security → “Open Anyway”</p>
+  <p class="fine">Free &amp; open source · macOS 14+ · or <code>brew install --cask nik-holo/tap/kuroko</code></p>
+  <p class="fine">Unsigned build: after first launch is blocked, allow it under
+  System Settings → Privacy &amp; Security → “Open Anyway”</p>
 
   <div class="features">
     <div class="feature">
       <h3>Automatic conversion</h3>
-      <p>Watches Downloads and Desktop (or any folders you pick) and converts new images the moment they appear.</p>
+      <p>Watches Downloads and Desktop (or any folders you pick) and converts new images the moment they appear. JPEG for photos, PNG for transparency, GIF for animated WebPs.</p>
     </div>
     <div class="feature">
       <h3>Drag &amp; drop anything</h3>
-      <p>Drop images — or whole folders — onto the menu bar icon. A small panel lets you pick the output format, quality and destination before converting.</p>
+      <p>Drop images — or whole folders — onto the menu bar icon and pick the output: JPEG, PNG, GIF, or go the other way to AVIF and HEIC. Any format your Mac can read goes in.</p>
     </div>
     <div class="feature">
-      <h3>Smart about formats</h3>
-      <p>JPEG for photos, PNG when there's transparency to preserve, GIF for animated WebPs — and dropped files can be any format your Mac can read, PNG and JPEG included.</p>
+      <h3>Fits any size limit</h3>
+      <p>Need it under 2&nbsp;MB, or no wider than 2048&nbsp;px? Set pixel and megabyte caps per drop — kuroko lowers quality first, then dimensions, until the file fits.</p>
+    </div>
+    <div class="feature">
+      <h3>Privacy included</h3>
+      <p>One toggle strips EXIF metadata, including GPS location, from converted images. And nothing ever leaves your Mac — no uploads, no accounts, no analytics.</p>
+    </div>
+    <div class="feature">
+      <h3>Right there in Finder</h3>
+      <p>Select images in Finder, right-click → Services → <em>Convert with kuroko</em>. Changed your mind? <em>Undo Last Conversion</em> brings the originals straight back.</p>
     </div>
     <div class="feature">
       <h3>Safe &amp; quiet</h3>
-      <p>Originals go to the Trash, not into the void. No Dock icon, no notifications — just a Pause switch and a Convert Now sweep when you want them.</p>
+      <p>Originals go to the Trash, recoverable, never into the void. No Dock icon; notifications are opt-in, plus a quiet running tally of everything converted.</p>
     </div>
   </div>
 
@@ -271,6 +298,14 @@
     <h3>What happens to animated WebP images?</h3>
     <p>They become GIFs, with frame timing preserved — so animations stay animations
     instead of collapsing into a single still frame.</p>
+    <h3>Can it convert JPEG or PNG to AVIF and HEIC?</h3>
+    <p>Yes — drag &amp; drop conversion works in both directions: pick AVIF or HEIC as the
+    output format to shrink images into modern formats. (WebP output isn't possible —
+    macOS can decode WebP but not encode it.)</p>
+    <h3>Can it keep images under a size limit?</h3>
+    <p>Yes. When converting by drag &amp; drop you can cap the output by pixels (longest
+    side) and/or megabytes — kuroko reduces quality first, then dimensions, until the
+    file fits your limit.</p>
     <h3>Are my images uploaded anywhere?</h3>
     <p>No. kuroko converts everything locally using Apple's built-in ImageIO framework and
     makes no network connections at all. It's open source, so you can verify that.</p>

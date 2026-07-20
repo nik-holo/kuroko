@@ -34,6 +34,9 @@ struct DropPanelView: View {
     @State private var format: OutputFormat = .auto
     @State private var quality: Double = SettingsStore.shared.jpegQuality
     @State private var trashOriginals: Bool = SettingsStore.shared.trashOriginals
+    @State private var stripMetadata: Bool = SettingsStore.shared.stripMetadata
+    @State private var maxPixelsText: String = ""
+    @State private var maxMBText: String = ""
     @State private var destination: URL?
 
     var body: some View {
@@ -56,21 +59,38 @@ struct DropPanelView: View {
             }
 
             Picker("Convert to", selection: $format) {
-                ForEach(OutputFormat.allCases) { Text($0.label).tag($0) }
+                ForEach(OutputFormat.encodable) { Text($0.label).tag($0) }
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
+            .fixedSize()
 
-            if format == .auto || format == .jpeg {
+            HStack(spacing: 6) {
+                Text("Max size:")
+                TextField("none", text: $maxPixelsText)
+                    .frame(width: 64)
+                    .multilineTextAlignment(.trailing)
+                Text("px")
+                TextField("none", text: $maxMBText)
+                    .frame(width: 56)
+                    .multilineTextAlignment(.trailing)
+                Text("MB")
+                Spacer()
+            }
+            .font(.callout)
+            Text("Leave blank for no limit. MB cap lowers quality, then dimensions, until it fits.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            if format.isLossy {
                 VStack(alignment: .leading, spacing: 2) {
                     Slider(value: $quality, in: 0.5...1.0, step: 0.05)
-                    Text("JPEG quality: \(Int(quality * 100))%")
+                    Text("Quality: \(Int(quality * 100))%")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             }
 
             Toggle("Move originals to Trash", isOn: $trashOriginals)
+            Toggle("Remove metadata (EXIF, GPS location)", isOn: $stripMetadata)
 
             HStack(spacing: 6) {
                 Text("Save to:")
@@ -95,7 +115,11 @@ struct DropPanelView: View {
                             format: format,
                             jpegQuality: quality,
                             animatedToGIF: true,
-                            destinationDir: destination
+                            destinationDir: destination,
+                            maxDimension: Int(maxPixelsText.trimmingCharacters(in: .whitespaces)),
+                            maxFileBytes: Double(maxMBText.trimmingCharacters(in: .whitespaces))
+                                .map { Int($0 * 1_048_576) },
+                            stripMetadata: stripMetadata
                         ),
                         trashOriginals: trashOriginals
                     )

@@ -36,6 +36,14 @@ struct KurokoApp: App {
             case "--dest":
                 guard let value = iterator.next() else { exit(2) }
                 options.destinationDir = URL(fileURLWithPath: value, isDirectory: true)
+            case "--max-dimension":
+                guard let value = iterator.next(), let dimension = Int(value), dimension > 0 else { exit(2) }
+                options.maxDimension = dimension
+            case "--max-mb":
+                guard let value = iterator.next(), let mb = Double(value), mb > 0 else { exit(2) }
+                options.maxFileBytes = Int(mb * 1_048_576)
+            case "--strip-metadata":
+                options.stripMetadata = true
             default:
                 paths.append(arg)
             }
@@ -61,11 +69,21 @@ struct KurokoApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var appState: AppState?
     private var statusController: StatusItemController?
+    private var serviceProvider: ServiceProvider?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         let state = AppState()
+        let controller = StatusItemController(appState: state)
         appState = state
-        statusController = StatusItemController(appState: state)
+        statusController = controller
+
+        // Finder right-click → Services → "Convert with kuroko"
+        let provider = ServiceProvider { [weak controller] urls in
+            controller?.handleDrop(urls)
+        }
+        serviceProvider = provider
+        NSApp.servicesProvider = provider
+        NSUpdateDynamicServices()
     }
 }
