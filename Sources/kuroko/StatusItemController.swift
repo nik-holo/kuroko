@@ -1,5 +1,6 @@
 import AppKit
 import UniformTypeIdentifiers
+import Sparkle
 
 /// AppKit-based menu bar item. We use NSStatusItem instead of SwiftUI's
 /// MenuBarExtra because the status button must accept file drops, which
@@ -9,6 +10,8 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let statusItem: NSStatusItem
     private let menu = NSMenu()
     private let appState: AppState
+    /// Sparkle updater; nil when running unbundled (swift run / debug binary).
+    var updater: SPUUpdater?
 
     init(appState: AppState) {
         self.appState = appState
@@ -59,6 +62,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         }
         menu.addItem(.separator())
         menu.addItem(item("Settings…", #selector(openSettings)))
+        if updater != nil {
+            menu.addItem(item("Check for Updates…", #selector(checkForUpdates)))
+        }
         menu.addItem(.separator())
         menu.addItem(item("Quit kuroko", #selector(quit)))
     }
@@ -74,6 +80,11 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     @objc private func undoLast() { appState.engine.undoLast() }
     @objc private func openSettings() { SettingsWindow.show() }
     @objc private func quit() { NSApp.terminate(nil) }
+
+    @objc private func checkForUpdates() {
+        NSApp.activate(ignoringOtherApps: true)
+        updater?.checkForUpdates()
+    }
 
     @objc private func chooseFiles() {
         let panel = NSOpenPanel()

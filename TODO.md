@@ -6,8 +6,6 @@ Deliberately deferred — roughly in the order they'll probably matter:
   hardened runtime + `notarytool` + stapling, wired into `make-app.sh`/`make-dmg.sh`.
   Kills the Gatekeeper "Open Anyway" friction for downloads. Do this when the app
   has users beyond friends.
-- **Sparkle auto-updates** — pairs with notarization; matters once users won't
-  re-download DMGs manually.
 - **Persist the processed-file memory** — in keep-originals mode the in-memory
   "already converted" set dies with the app; a restart plus a folder event can
   reconvert an old original into a ` 2` copy. Store keys on disk.

@@ -83,22 +83,39 @@ The version lives in the `VERSION` file and flows into the app bundle
 
 ```sh
 # 1. bump the version
-echo "0.2.0" > VERSION
+echo "0.5.0" > VERSION
 
-# 2. build and spot-check the DMG
+# 2. build the DMG and the signed Sparkle appcast
 ./scripts/make-dmg.sh
-open dist/kuroko-0.2.0.dmg
+./scripts/make-appcast.sh
+open dist/kuroko-0.5.0.dmg   # spot-check
 
 # 3. commit, tag, push
-git commit -am "Release v0.2.0"
-git tag v0.2.0
+git commit -am "Release v0.5.0"
+git tag v0.5.0
 git push && git push --tags
 
 # 4. publish the GitHub release with the DMG attached (kuroko.dmg is the
 #    stable-name copy the landing page's download button points at)
-gh release create v0.2.0 dist/kuroko-0.2.0.dmg dist/kuroko.dmg \
-  --title "kuroko 0.2.0" --generate-notes
+gh release create v0.5.0 dist/kuroko-0.5.0.dmg dist/kuroko.dmg \
+  --title "kuroko 0.5.0" --generate-notes
+
+# 5. deploy the site — the appcast lives there, existing apps update from it
+npx wrangler deploy
+
+# 6. bump the Homebrew cask: version + sha256 in
+#    /opt/homebrew/Library/Taps/nik-holo/homebrew-tap/Casks/kuroko.rb, push
 ```
+
+## Auto-updates
+
+Updates ship via [Sparkle](https://sparkle-project.org): the app checks
+`https://kuroko.holo.red/appcast.xml` (also on demand via **Check for
+Updates…** in the menu). `scripts/make-appcast.sh` signs the DMG with an
+EdDSA key that lives in the login Keychain — created once with Sparkle's
+`generate_keys`; the public half is `SUPublicEDKey` in the Info.plist.
+The signed DMG must be byte-identical to the released GitHub asset.
+Updates only work from installed, bundled builds (not `swift run`).
 
 ## Icons
 

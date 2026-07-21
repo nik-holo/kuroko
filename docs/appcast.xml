@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>kuroko</title>
+    <link>https://kuroko.holo.red/</link>
+    <item>
+      <title>kuroko 0.4.0</title>
+      <pubDate>Tue, 21 Jul 2026 21:20:27 +0000</pubDate>
+      <sparkle:version>0.4.0</sparkle:version>
+      <sparkle:shortVersionString>0.4.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <sparkle:releaseNotesLink>https://github.com/nik-holo/kuroko/releases/tag/v0.4.0</sparkle:releaseNotesLink>
+      <enclosure
+        url="https://github.com/nik-holo/kuroko/releases/download/v0.4.0/kuroko-0.4.0.dmg"
+        sparkle:edSignature="XBtUXbD5dJHhphGOTwTTcXaq27MRcEia8lyHE+/OkWGtxYzG62i7dqb7ePWoKL+JslWyUIThAUJ6/baPZCe8Bw==" length="4379464"
+        type="application/octet-stream"/>
+    </item>
+  </channel>
+</rss>

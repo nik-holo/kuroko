@@ -13,10 +13,17 @@ if [[ ! -f Resources/kuroko.icns ]]; then
     swift scripts/genicons.swift
 fi
 
+SPARKLE_FRAMEWORK=".build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework"
+if [[ ! -d "$SPARKLE_FRAMEWORK" ]]; then
+    echo "error: Sparkle framework not found at $SPARKLE_FRAMEWORK (run swift build first)" >&2
+    exit 1
+fi
+
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 cp .build/release/kuroko "$APP/Contents/MacOS/kuroko"
 cp Resources/kuroko.icns "$APP/Contents/Resources/kuroko.icns"
+cp -R "$SPARKLE_FRAMEWORK" "$APP/Contents/Frameworks/Sparkle.framework"
 
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -33,6 +40,9 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
     <key>NSHighResolutionCapable</key><true/>
+    <key>SUFeedURL</key><string>https://kuroko.holo.red/appcast.xml</string>
+    <key>SUPublicEDKey</key><string>QTo3ixAh4FMNAf8ZIDqq2/GGftzrypwf0u2mWxGBigE=</string>
+    <key>SUEnableAutomaticChecks</key><true/>
     <key>NSServices</key>
     <array>
         <dict>

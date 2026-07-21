@@ -1,4 +1,5 @@
 import SwiftUI
+import Sparkle
 
 @main
 struct KurokoApp: App {
@@ -70,11 +71,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var appState: AppState?
     private var statusController: StatusItemController?
     private var serviceProvider: ServiceProvider?
+    private var updaterController: SPUStandardUpdaterController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
+
+        // Sparkle needs a real bundle (SUFeedURL etc.) — skip when run bare.
+        if Bundle.main.bundleIdentifier != nil {
+            updaterController = SPUStandardUpdaterController(
+                startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil
+            )
+        }
+
         let state = AppState()
         let controller = StatusItemController(appState: state)
+        controller.updater = updaterController?.updater
         appState = state
         statusController = controller
 
