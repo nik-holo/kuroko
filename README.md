@@ -143,8 +143,9 @@ Converts the given files in place and exits — handy for testing without the GU
 
 ## Notes & known limitations
 
-- "Has transparency" is judged from the image's alpha channel; a fully opaque image
-  saved with an alpha channel still becomes PNG rather than JPEG.
+- "Has transparency" is judged from the actual pixels (scanned on a ≤512px
+  downscale), so an opaque image that merely carries an alpha channel still
+  becomes JPEG. Semi-transparent pixels anywhere in the first frame mean PNG.
 - In keep-originals mode, already-converted files are remembered in memory; after an
   app restart, Convert Now skips files whose output already exists, but a folder
   event for an old original could reconvert it (producing a ` 2` copy).

@@ -116,13 +116,20 @@ enum ImageConverter {
         guard frameCount > 0 else { throw ConvertError.undecodable }
 
         let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any]
-        let hasAlpha = (properties?[kCGImagePropertyHasAlpha] as? Bool) ?? false
+        let declaresAlpha = (properties?[kCGImagePropertyHasAlpha] as? Bool) ?? false
         let animated = frameCount > 1
 
         let resolved: OutputFormat
         switch options.format {
         case .auto:
-            resolved = (animated && options.animatedToGIF) ? .gif : (hasAlpha ? .png : .jpeg)
+            if animated && options.animatedToGIF {
+                resolved = .gif
+            } else {
+                // The container flag only says an alpha channel exists; many WebP/HEIC
+                // files carry a fully opaque one. Check the pixels before choosing PNG.
+                let transparent = declaresAlpha && usesTransparency(source)
+                resolved = transparent ? .png : .jpeg
+            }
         default:
             resolved = options.format
         }
@@ -199,6 +206,49 @@ enum ImageConverter {
             throw ConvertError.encodeFailed
         }
         return ConversionOutcome(output: output, kind: resolved.fileExtension)
+    }
+
+    /// True if any pixel of the first frame is not fully opaque. Scans a downscaled
+    /// copy (longest side ≤ 512px) so the check stays cheap on large images.
+    /// Errs towards `true` when the pixels cannot be read, matching the old behaviour.
+    static func usesTransparency(_ source: CGImageSource) -> Bool {
+        let thumbOptions: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceThumbnailMaxPixelSize: 512,
+            kCGImageSourceShouldCacheImmediately: true,
+        ]
+        guard let image = CGImageSourceCreateThumbnailAtIndex(source, 0, thumbOptions as CFDictionary) else {
+            return true
+        }
+        switch image.alphaInfo {
+        case .none, .noneSkipFirst, .noneSkipLast:
+            return false
+        default:
+            break
+        }
+
+        let width = image.width, height = image.height
+        guard width > 0, height > 0 else { return true }
+        let bytesPerRow = width * 4
+        var pixels = [UInt8](repeating: 0, count: bytesPerRow * height)
+        let drawn = pixels.withUnsafeMutableBytes { buffer -> Bool in
+            guard let context = CGContext(
+                data: buffer.baseAddress, width: width, height: height, bitsPerComponent: 8,
+                bytesPerRow: bytesPerRow, space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            ) else { return false }
+            context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
+        }
+        guard drawn else { return true }
+
+        // RGBA: alpha is every 4th byte, starting at offset 3
+        var offset = 3
+        while offset < pixels.count {
+            if pixels[offset] != 255 { return true }
+            offset += 4
+        }
+        return false
     }
 
     private static func encodeGIF(_ source: CGImageSource, frameCount: Int, original: URL,

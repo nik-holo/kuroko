@@ -4,15 +4,15 @@
     <title>kuroko</title>
     <link>https://kuroko.holo.red/</link>
     <item>
-      <title>kuroko 0.4.0</title>
-      <pubDate>Tue, 21 Jul 2026 21:20:27 +0000</pubDate>
-      <sparkle:version>0.4.0</sparkle:version>
-      <sparkle:shortVersionString>0.4.0</sparkle:shortVersionString>
+      <title>kuroko 0.4.1</title>
+      <pubDate>Sat, 12 Sep 2026 22:08:19 +0000</pubDate>
+      <sparkle:version>0.4.1</sparkle:version>
+      <sparkle:shortVersionString>0.4.1</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-      <sparkle:releaseNotesLink>https://github.com/nik-holo/kuroko/releases/tag/v0.4.0</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://github.com/nik-holo/kuroko/releases/tag/v0.4.1</sparkle:releaseNotesLink>
       <enclosure
-        url="https://github.com/nik-holo/kuroko/releases/download/v0.4.0/kuroko-0.4.0.dmg"
-        sparkle:edSignature="XBtUXbD5dJHhphGOTwTTcXaq27MRcEia8lyHE+/OkWGtxYzG62i7dqb7ePWoKL+JslWyUIThAUJ6/baPZCe8Bw==" length="4379464"
+        url="https://github.com/nik-holo/kuroko/releases/download/v0.4.1/kuroko-0.4.1.dmg"
+        sparkle:edSignature="haVKnpCCvFfNyNZk2mQuG3quXcd9vVJjk2lfz5fYwi+5AZJsOh2ufI3MzDch5kCdxhsjCnt5qAyVizTMyXZvAg==" length="4381155"
         type="application/octet-stream"/>
     </item>
   </channel>
