@@ -5,11 +5,19 @@
     <link>https://kuroko.holo.red/</link>
     <item>
       <title>kuroko 0.4.1</title>
-      <pubDate>Sat, 12 Sep 2026 22:08:19 +0000</pubDate>
+      <pubDate>Mon, 21 Sep 2026 10:37:46 +0000</pubDate>
       <sparkle:version>0.4.1</sparkle:version>
       <sparkle:shortVersionString>0.4.1</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-      <sparkle:releaseNotesLink>https://github.com/nik-holo/kuroko/releases/tag/v0.4.1</sparkle:releaseNotesLink>
+      <description><![CDATA[
+<style>body{font:13px -apple-system,system-ui;margin:10px 14px;color:#222}h3{margin:0 0 6px;font-size:14px}ul{padding-left:18px;margin:0}li{margin:3px 0}code{font:12px ui-monospace,Menlo}a{color:#0a84ff}@media(prefers-color-scheme:dark){body{color:#ddd;background:transparent}}</style>
+<h3>kuroko 0.4.1</h3>
+<ul>
+  <li>Auto format now scans the actual pixels instead of trusting the container's alpha flag: opaque images with an alpha channel become JPEG, only genuinely transparent ones stay PNG</li>
+  <li>Refreshed landing page screenshots</li>
+</ul>
+      ]]></description>
+      <sparkle:fullReleaseNotesLink>https://github.com/nik-holo/kuroko/releases/tag/v0.4.1</sparkle:fullReleaseNotesLink>
       <enclosure
         url="https://github.com/nik-holo/kuroko/releases/download/v0.4.1/kuroko-0.4.1.dmg"
         sparkle:edSignature="haVKnpCCvFfNyNZk2mQuG3quXcd9vVJjk2lfz5fYwi+5AZJsOh2ufI3MzDch5kCdxhsjCnt5qAyVizTMyXZvAg==" length="4381155"

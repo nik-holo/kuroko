@@ -82,7 +82,8 @@ The version lives in the `VERSION` file and flows into the app bundle
 (`CFBundleShortVersionString`) and the DMG filename automatically.
 
 ```sh
-# 1. bump the version
+# 1. bump the version and add a "## 0.5.0" section to CHANGELOG.md
+#    (it becomes the release notes shown inside the update dialog)
 echo "0.5.0" > VERSION
 
 # 2. build the DMG and the signed Sparkle appcast
@@ -98,7 +99,7 @@ git push && git push --tags
 # 4. publish the GitHub release with the DMG attached (kuroko.dmg is the
 #    stable-name copy the landing page's download button points at)
 gh release create v0.5.0 dist/kuroko-0.5.0.dmg dist/kuroko.dmg \
-  --title "kuroko 0.5.0" --generate-notes
+  --title "kuroko 0.5.0" --notes "$(scripts/changelog-html.py 0.5.0 --md)"
 
 # 5. deploy the site — the appcast lives there, existing apps update from it
 npx wrangler deploy
@@ -115,6 +116,10 @@ Updates…** in the menu). `scripts/make-appcast.sh` signs the DMG with an
 EdDSA key that lives in the login Keychain — created once with Sparkle's
 `generate_keys`; the public half is `SUPublicEDKey` in the Info.plist.
 The signed DMG must be byte-identical to the released GitHub asset.
+Release notes shown in the update dialog come from the matching
+`## <version>` section of `CHANGELOG.md`, rendered to inline HTML by
+`scripts/changelog-html.py`; the GitHub release stays linked as the
+"full release notes" page.
 Updates only work from installed, bundled builds (not `swift run`).
 
 ## Icons
