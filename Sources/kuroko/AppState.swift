@@ -40,11 +40,17 @@ final class AppState: ObservableObject {
 
     private func handleChanges(_ urls: [URL]) {
         guard !paused else { return }
-        let extensions = SettingsStore.shared.enabledExtensions
+        let settings = SettingsStore.shared
+        let extensions = settings.enabledExtensions
         for url in urls {
             let name = url.lastPathComponent
-            guard !name.hasPrefix("."), extensions.contains(url.pathExtension.lowercased()) else { continue }
-            engine.handle(url)
+            guard !name.hasPrefix(".") else { continue }
+            let ext = url.pathExtension.lowercased()
+            if extensions.contains(ext) {
+                engine.handle(url)
+            } else if settings.downloadWebLinks, WebLinkResolver.linkExtensions.contains(ext) {
+                engine.handleWebLink(url)
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ final class SettingsStore: ObservableObject {
         static let convertHEIC = "convertHEIC"
         static let animatedToGIF = "animatedToGIF"
         static let stripMetadata = "stripMetadata"
+        static let downloadWebLinks = "downloadWebLinks"
         static let notifyOnConversion = "notifyOnConversion"
         static let totalConverted = "totalConverted"
     }
@@ -25,6 +26,7 @@ final class SettingsStore: ObservableObject {
     @Published var convertHEIC: Bool { didSet { defaults.set(convertHEIC, forKey: Keys.convertHEIC) } }
     @Published var animatedToGIF: Bool { didSet { defaults.set(animatedToGIF, forKey: Keys.animatedToGIF) } }
     @Published var stripMetadata: Bool { didSet { defaults.set(stripMetadata, forKey: Keys.stripMetadata) } }
+    @Published var downloadWebLinks: Bool { didSet { defaults.set(downloadWebLinks, forKey: Keys.downloadWebLinks) } }
     @Published var notifyOnConversion: Bool { didSet { defaults.set(notifyOnConversion, forKey: Keys.notifyOnConversion) } }
     @Published var totalConverted: Int { didSet { defaults.set(totalConverted, forKey: Keys.totalConverted) } }
 
@@ -45,6 +47,7 @@ final class SettingsStore: ObservableObject {
             Keys.convertHEIC: true,
             Keys.animatedToGIF: true,
             Keys.stripMetadata: false,
+            Keys.downloadWebLinks: true,
             Keys.notifyOnConversion: false,
             Keys.totalConverted: 0,
         ])
@@ -56,6 +59,7 @@ final class SettingsStore: ObservableObject {
         convertHEIC = defaults.bool(forKey: Keys.convertHEIC)
         animatedToGIF = defaults.bool(forKey: Keys.animatedToGIF)
         stripMetadata = defaults.bool(forKey: Keys.stripMetadata)
+        downloadWebLinks = defaults.bool(forKey: Keys.downloadWebLinks)
         notifyOnConversion = defaults.bool(forKey: Keys.notifyOnConversion)
         totalConverted = defaults.integer(forKey: Keys.totalConverted)
     }

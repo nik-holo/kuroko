@@ -103,8 +103,32 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     func handleDrop(_ urls: [URL]) {
         let files = DropExpander.expand(urls)
-        guard !files.isEmpty else { return }
-        DropPanel.show(files: files, engine: appState.engine)
+        let links = DropExpander.webLinks(urls)
+        guard !files.isEmpty || !links.isEmpty else { return }
+        guard !links.isEmpty else {
+            DropPanel.show(files: files, engine: appState.engine)
+            return
+        }
+        // Link files / web URLs must be downloaded before the panel can offer
+        // options for them. Downloads land next to the link file, or in the
+        // first watched folder (falling back to ~/Downloads) for bare URLs.
+        let engine = appState.engine
+        Task { @MainActor in
+            var all = files
+            for link in links {
+                let directory = link.file?.deletingLastPathComponent()
+                    ?? SettingsStore.shared.folders.first.map { URL(fileURLWithPath: $0, isDirectory: true) }
+                    ?? FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
+                do {
+                    let downloaded = try await WebLinkResolver.download(link.url, into: directory)
+                    all.append(downloaded)
+                } catch {
+                    NSLog("kuroko: download failed for \(link.url.absoluteString): \(error)")
+                }
+            }
+            guard !all.isEmpty else { return }
+            DropPanel.show(files: all, engine: engine)
+        }
     }
 }
 
@@ -138,7 +162,7 @@ final class StatusDropView: NSView {
 
     override init(frame: NSRect) {
         super.init(frame: frame)
-        registerForDraggedTypes([.fileURL])
+        registerForDraggedTypes([.fileURL, .URL])
     }
 
     required init?(coder: NSCoder) { fatalError("not used") }
@@ -147,24 +171,20 @@ final class StatusDropView: NSView {
     override func rightMouseDown(with event: NSEvent) { onClick() }
 
     override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
-        hasFileURLs(sender) ? .copy : []
+        hasURLs(sender) ? .copy : []
     }
 
+    /// Accepts file URLs (images, folders, .webloc files) and plain web URLs
+    /// dragged from a browser — those are resolved to images by the controller.
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        let urls = (sender.draggingPasteboard.readObjects(
-            forClasses: [NSURL.self],
-            options: [.urlReadingFileURLsOnly: true]
-        ) as? [URL]) ?? []
+        let urls = (sender.draggingPasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL]) ?? []
         guard !urls.isEmpty else { return false }
         onDrop(urls)
         return true
     }
 
-    private func hasFileURLs(_ info: NSDraggingInfo) -> Bool {
-        info.draggingPasteboard.canReadObject(
-            forClasses: [NSURL.self],
-            options: [.urlReadingFileURLsOnly: true]
-        )
+    private func hasURLs(_ info: NSDraggingInfo) -> Bool {
+        info.draggingPasteboard.canReadObject(forClasses: [NSURL.self], options: nil)
     }
 }
 
@@ -186,6 +206,24 @@ enum DropExpander {
             }
         }
         return files
+    }
+
+    /// A dropped item that still has to be downloaded: a `.webloc`/`.url`
+    /// file (kept so the download can land beside it) or a bare web URL.
+    struct WebLink {
+        let url: URL
+        let file: URL?
+    }
+
+    static func webLinks(_ urls: [URL]) -> [WebLink] {
+        urls.compactMap { url in
+            if url.isFileURL {
+                guard WebLinkResolver.isLinkFile(url), let target = WebLinkResolver.url(fromLinkFile: url) else { return nil }
+                return WebLink(url: target, file: url)
+            }
+            guard ["http", "https"].contains(url.scheme?.lowercased() ?? "") else { return nil }
+            return WebLink(url: url, file: nil)
+        }
     }
 
     static func isImage(_ url: URL) -> Bool {

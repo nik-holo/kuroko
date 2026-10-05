@@ -4,23 +4,24 @@
     <title>kuroko</title>
     <link>https://kuroko.holo.red/</link>
     <item>
-      <title>kuroko 0.4.1</title>
-      <pubDate>Mon, 21 Sep 2026 10:37:46 +0000</pubDate>
-      <sparkle:version>0.4.1</sparkle:version>
-      <sparkle:shortVersionString>0.4.1</sparkle:shortVersionString>
+      <title>kuroko 0.5.0</title>
+      <pubDate>Mon, 05 Oct 2026 10:18:21 +0000</pubDate>
+      <sparkle:version>0.5.0</sparkle:version>
+      <sparkle:shortVersionString>0.5.0</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
       <description><![CDATA[
 <style>body{font:13px -apple-system,system-ui;margin:10px 14px;color:#222}h3{margin:0 0 6px;font-size:14px}ul{padding-left:18px;margin:0}li{margin:3px 0}code{font:12px ui-monospace,Menlo}a{color:#0a84ff}@media(prefers-color-scheme:dark){body{color:#ddd;background:transparent}}</style>
-<h3>kuroko 0.4.1</h3>
+<h3>kuroko 0.5.0</h3>
 <ul>
-  <li>Auto format now scans the actual pixels instead of trusting the container's alpha flag: opaque images with an alpha channel become JPEG, only genuinely transparent ones stay PNG</li>
-  <li>Refreshed landing page screenshots</li>
+  <li><b>Web links become images:</b> <code>.webloc</code> / <code>.url</code> files landing in a watched folder (what Safari drops when you drag a picture out of Threads, Instagram, Dribbble…) are resolved — the image behind the link is downloaded, the link is trashed, and the image is converted if it's WebP/AVIF/HEIC</li>
+  <li>Drop link files or a browser URL onto the menu bar icon to download + convert</li>
+  <li>New <b>Web Links</b> toggle in Settings; <code>kuroko fetch</code> headless command</li>
 </ul>
       ]]></description>
-      <sparkle:fullReleaseNotesLink>https://github.com/nik-holo/kuroko/releases/tag/v0.4.1</sparkle:fullReleaseNotesLink>
+      <sparkle:fullReleaseNotesLink>https://github.com/nik-holo/kuroko/releases/tag/v0.5.0</sparkle:fullReleaseNotesLink>
       <enclosure
-        url="https://github.com/nik-holo/kuroko/releases/download/v0.4.1/kuroko-0.4.1.dmg"
-        sparkle:edSignature="haVKnpCCvFfNyNZk2mQuG3quXcd9vVJjk2lfz5fYwi+5AZJsOh2ufI3MzDch5kCdxhsjCnt5qAyVizTMyXZvAg==" length="4381155"
+        url="https://github.com/nik-holo/kuroko/releases/download/v0.5.0/kuroko-0.5.0.dmg"
+        sparkle:edSignature="CjLQXH2ElLLmeHCRnJd9KMUfgcY896rJTxUPyEzTNvLsCzQNtARUe9SBIyFp41z6WF8M3DuafmHHu/cpP05nAQ==" length="4411674"
         type="application/octet-stream"/>
     </item>
   </channel>

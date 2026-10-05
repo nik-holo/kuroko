@@ -6,6 +6,7 @@ struct KurokoApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     init() {
+        Self.runFetchCLIIfRequested()
         Self.runCLIIfRequested()
     }
 
@@ -13,6 +14,55 @@ struct KurokoApp: App {
         // The app is fully menu-bar driven (see AppDelegate/StatusItemController);
         // an empty Settings scene satisfies SwiftUI's requirement for one scene.
         Settings { EmptyView() }
+    }
+
+    /// Headless web-link resolution for testing:
+    /// `kuroko fetch [--dest <dir>] <url-or-webloc>...` downloads the image
+    /// behind each link into --dest (default: the current directory).
+    private static func runFetchCLIIfRequested() {
+        var args = Array(CommandLine.arguments.dropFirst())
+        guard args.first == "fetch" else { return }
+        args.removeFirst()
+
+        var destination = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
+        var targets: [URL] = []
+        var iterator = args.makeIterator()
+        while let arg = iterator.next() {
+            if arg == "--dest" {
+                guard let value = iterator.next() else { exit(2) }
+                destination = URL(fileURLWithPath: value, isDirectory: true)
+            } else if arg.hasPrefix("http://") || arg.hasPrefix("https://"), let url = URL(string: arg) {
+                targets.append(url)
+            } else if let url = WebLinkResolver.url(fromLinkFile: URL(fileURLWithPath: arg)) {
+                targets.append(url)
+            } else {
+                FileHandle.standardError.write(Data("not a web URL or link file: \(arg)\n".utf8))
+                exit(2)
+            }
+        }
+        guard !targets.isEmpty else {
+            FileHandle.standardError.write(Data("usage: kuroko fetch [--dest <dir>] <url-or-webloc>...\n".utf8))
+            exit(2)
+        }
+
+        // App is @MainActor, so a plain Task would run on the main thread we
+        // are about to block — detach it.
+        let semaphore = DispatchSemaphore(value: 0)
+        var failed = false
+        Task.detached {
+            for target in targets {
+                do {
+                    let saved = try await WebLinkResolver.download(target, into: destination)
+                    print("\(target.absoluteString) -> \(saved.lastPathComponent)")
+                } catch {
+                    FileHandle.standardError.write(Data("failed: \(target.absoluteString): \(error)\n".utf8))
+                    failed = true
+                }
+            }
+            semaphore.signal()
+        }
+        semaphore.wait()
+        exit(failed ? 1 : 0)
     }
 
     /// Headless mode for testing:

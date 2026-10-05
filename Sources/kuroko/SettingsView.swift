@@ -37,6 +37,13 @@ struct SettingsView: View {
                     .disabled(!settings.convertWebP)
             }
 
+            Section("Web Links") {
+                Toggle("Download images behind .webloc link files", isOn: $settings.downloadWebLinks)
+                Text("Dragging a picture out of Threads, Instagram or Dribbble often drops a link file instead of the image. kuroko fetches the image it points to, then converts it if needed.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
             Section("Output") {
                 Toggle("Move originals to Trash", isOn: $settings.trashOriginals)
                 Toggle("Remove metadata (EXIF, GPS location)", isOn: $settings.stripMetadata)

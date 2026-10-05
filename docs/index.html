@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Convert WebP, AVIF &amp; HEIC to JPEG or PNG on Mac — kuroko</title>
-<meta name="description" content="Free Mac menu bar app that automatically converts WebP, AVIF and HEIC images to JPEG, PNG or GIF as they land in your Downloads. Drag &amp; drop converts anything.">
+<meta name="description" content="Free Mac menu bar app that automatically converts WebP, AVIF and HEIC images to JPEG, PNG or GIF as they land in your Downloads, and turns .webloc link files dragged from Threads or Instagram into real images. Drag &amp; drop converts anything.">
 <link rel="canonical" href="https://kuroko.holo.red/">
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
@@ -30,7 +30,7 @@
   "operatingSystem": "macOS 14.0 or later",
   "applicationCategory": "UtilitiesApplication",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "description": "Menu bar app that automatically converts WebP, AVIF and HEIC images to JPEG, PNG or GIF, with drag & drop conversion for any image format.",
+  "description": "Menu bar app that automatically converts WebP, AVIF and HEIC images to JPEG, PNG or GIF, resolves .webloc web link files into downloaded images, and offers drag & drop conversion for any image format.",
   "url": "https://kuroko.holo.red/",
   "downloadUrl": "https://github.com/nik-holo/kuroko/releases/latest/download/kuroko.dmg",
   "image": "https://kuroko.holo.red/icon.png",
@@ -64,13 +64,18 @@
     },
     {
       "@type": "Question",
+      "name": "Why do I get a .webloc file instead of an image when dragging from Threads?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Sites like Threads, Instagram and Dribbble wrap pictures in links, so Safari saves a web link file rather than the image. kuroko watches for .webloc and .url files, downloads the image they point to, replaces the link with it, and converts it if it's WebP, AVIF or HEIC. You can also drop a link file or a URL onto the menu bar icon." }
+    },
+    {
+      "@type": "Question",
       "name": "Can it keep images under a size limit?",
       "acceptedAnswer": { "@type": "Answer", "text": "Yes. When converting by drag & drop you can cap the output by pixels (longest side) and/or megabytes — kuroko reduces quality first, then dimensions, until the file fits your limit." }
     },
     {
       "@type": "Question",
       "name": "Are my images uploaded anywhere?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No. kuroko converts everything locally using Apple's built-in ImageIO framework and makes no network connections at all. It's open source, so you can verify that." }
+      "acceptedAnswer": { "@type": "Answer", "text": "No. kuroko converts everything locally using Apple's built-in ImageIO framework. The only network traffic is downloading an image you pointed it at via a link file, and checking for updates. It's open source, so you can verify that." }
     },
     {
       "@type": "Question",
@@ -263,6 +268,10 @@
       <p>Select images in Finder, right-click → Services → <em>Convert with kuroko</em>. Changed your mind? <em>Undo Last Conversion</em> brings the originals straight back.</p>
     </div>
     <div class="feature">
+      <h3>Link files become images</h3>
+      <p>Dragged a picture out of Threads or Instagram and got a useless <code>.webloc</code>? kuroko fetches the image behind the link, drops it in its place, and converts it if needed.</p>
+    </div>
+    <div class="feature">
       <h3>Safe &amp; quiet</h3>
       <p>Originals go to the Trash, recoverable, never into the void. No Dock icon; notifications are opt-in, plus a quiet running tally of everything converted.</p>
     </div>
@@ -306,9 +315,16 @@
     <p>Yes. When converting by drag &amp; drop you can cap the output by pixels (longest
     side) and/or megabytes — kuroko reduces quality first, then dimensions, until the
     file fits your limit.</p>
+    <h3>Why do I get a .webloc file instead of an image when dragging from Threads?</h3>
+    <p>Sites like Threads, Instagram and Dribbble wrap pictures in links, so Safari saves
+    a web link file rather than the image. kuroko watches for <code>.webloc</code> and
+    <code>.url</code> files, downloads the image they point to (directly, or via the
+    page's preview image), replaces the link with it, and converts it if it's WebP,
+    AVIF or HEIC. You can also drop a link file or a URL straight onto the menu bar icon.</p>
     <h3>Are my images uploaded anywhere?</h3>
-    <p>No. kuroko converts everything locally using Apple's built-in ImageIO framework and
-    makes no network connections at all. It's open source, so you can verify that.</p>
+    <p>No. kuroko converts everything locally using Apple's built-in ImageIO framework.
+    The only network traffic is downloading an image you pointed it at via a link file,
+    and checking for updates. It's open source, so you can verify that.</p>
     <h3>Is kuroko free?</h3>
     <p>Completely free and open source, no account, no ads. It needs macOS 14 (Sonoma)
     or newer.</p>

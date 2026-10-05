@@ -57,6 +57,15 @@ notarize it with an Apple Developer account).
   log out/in once — macOS caches the Services menu.)
 - **Metadata stripping** (Settings or per-drop): re-encodes pixels only, dropping
   EXIF including GPS location; orientation is baked into the pixels first.
+- **Web link files → images:** dragging a picture out of Threads, Instagram,
+  Dribbble and similar sites often drops a `.webloc` link file on your Desktop
+  instead of the image. kuroko spots `.webloc` / `.url` files appearing in watched
+  folders, fetches the image they point at (directly, or via the page's
+  `og:image` / `twitter:image`), saves it beside the link (e.g.
+  `threads.com Dd0s3ZfjvaD.jpg`), trashes the link, and converts the result if
+  it's WebP/AVIF/HEIC. Undo reverts the whole chain. You can also drop link files
+  or a URL straight from the browser onto the menu bar icon. Toggle in Settings →
+  Web Links. Headless check: `kuroko fetch --dest ~/Desktop <url-or-webloc>`.
 - Watching applies to **newly appearing files only**; files already in a folder are
   only touched by Convert Now.
 - Filename collisions get a suffix: `photo.webp` → `photo 2.jpg` if `photo.jpg` exists.

@@ -69,6 +69,81 @@ final class ConversionEngine: ObservableObject {
         }
     }
 
+    /// Watcher entry point for browser link files (`.webloc` / `.url`): the
+    /// linked image is downloaded next to the link, the link itself is trashed
+    /// (or kept, per settings), and if the image is in a convertible format it
+    /// goes through the normal conversion right away. One undo record covers
+    /// the whole chain: link → downloaded image → converted output.
+    func handleWebLink(_ file: URL) {
+        let path = file.path
+        guard !inFlight.contains(path) else { return }
+        guard FileManager.default.fileExists(atPath: path) else { return }
+        if let key = fileKey(file), processed.contains(key) { return }
+        inFlight.insert(path)
+
+        Task { [weak self] in
+            defer { self?.inFlight.remove(path) }
+            guard await Self.waitUntilStable(file) else { return }
+            guard let pageURL = WebLinkResolver.url(fromLinkFile: file),
+                  ["http", "https"].contains(pageURL.scheme?.lowercased() ?? "") else {
+                self?.logger.info("ignoring \(file.lastPathComponent): not a web link")
+                if let self, let key = self.fileKey(file) { self.processed.insert(key) }
+                return
+            }
+
+            let settings = SettingsStore.shared
+            let downloaded: URL
+            do {
+                downloaded = try await WebLinkResolver.download(pageURL, into: file.deletingLastPathComponent())
+            } catch {
+                guard let self else { return }
+                self.logger.error("download failed for \(pageURL.absoluteString): \(String(describing: error))")
+                if let key = self.fileKey(file) { self.processed.insert(key) }
+                self.notify(body: "Couldn't download \(pageURL.host ?? "link"): \(String(describing: error))")
+                return
+            }
+            guard let self else { return }
+            self.logger.info("downloaded \(pageURL.absoluteString) -> \(downloaded.lastPathComponent)")
+
+            // Convert immediately if the downloaded format is one we auto-convert.
+            var finalOutput = downloaded
+            if settings.enabledExtensions.contains(downloaded.pathExtension.lowercased()) {
+                var options = ConversionOptions(jpegQuality: settings.jpegQuality,
+                                                animatedToGIF: settings.animatedToGIF)
+                options.stripMetadata = settings.stripMetadata
+                let result: Result<ConversionOutcome, Error> = await Task.detached(priority: .utility) {
+                    Result { try ImageConverter.convert(downloaded, options: options) }
+                }.value
+                switch result {
+                case .success(let outcome):
+                    finalOutput = outcome.output
+                    // The intermediate download is ours, not the user's — remove it
+                    // outright rather than cluttering the Trash.
+                    try? FileManager.default.removeItem(at: downloaded)
+                case .failure(let error):
+                    self.logger.error("failed to convert \(downloaded.lastPathComponent): \(String(describing: error))")
+                    if let key = self.fileKey(downloaded) { self.processed.insert(key) }
+                }
+            }
+
+            var trashedURL: URL?
+            if settings.trashOriginals {
+                var resulting: NSURL?
+                do {
+                    try FileManager.default.trashItem(at: file, resultingItemURL: &resulting)
+                    trashedURL = resulting as URL?
+                } catch {
+                    self.logger.error("could not trash \(file.lastPathComponent): \(error.localizedDescription)")
+                    if let key = self.fileKey(file) { self.processed.insert(key) }
+                }
+            } else if let key = self.fileKey(file) {
+                self.processed.insert(key)
+            }
+            self.recordSuccess(items: [UndoRecord.Item(originalURL: file, trashedURL: trashedURL, outputURL: finalOutput)])
+            self.notify(body: "\(pageURL.host ?? "link") → \(finalOutput.lastPathComponent)")
+        }
+    }
+
     /// Converts user-dropped files with explicit options. No stability wait —
     /// dropped files are complete — and no processed-set bookkeeping, since the
     /// user explicitly asked for these conversions.
